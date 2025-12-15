@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Timer 30 Detik TikTok LIVE</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      font-family: Inter, Arial, sans-serif;
+    }
+
+    /* KOLAM UTAMA */
+    #container {
+      width: 360px;
+      height: 520px;
+      background: #2a242c;
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+      box-sizing: border-box;
+    }
+
+    /* KOTAK TIMER */
+    #timerBox {
+      width: 100%;
+      height: 90px;
+      background: #3a343d;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    #timer {
+      font-size: 56px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 2px;
+    }
+
+    /* KOLAM BAWAH (KOSONG) */
+    #supportBox {
+      width: 100%;
+      height: calc(100% - 114px);
+      background: #241f26;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.3);
+      font-size: 14px;
+    }
+
+    #plus {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 28px;
+      font-weight: 700;
+      color: #ffd84d;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .shake {
+      animation: shake 0.3s;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container">
+    <div id="timerBox">
+      <div id="timer">30</div>
+    </div>
+
+    <div id="supportBox">
+      area supporter
+    </div>
+  </div>
+
+  <div id="plus">+5</div>
+
+  <script>
+    const MAX_TIME = 30;
+    let timeLeft = MAX_TIME;
+    let interval = null;
+
+    const timerEl = document.getElementById('timer');
+    const plusEl = document.getElementById('plus');
+    const container = document.getElementById('container');
+
+    const audio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3');
+
+    function updateDisplay() {
+      timerEl.textContent = timeLeft < 10 ? '0' + timeLeft : timeLeft;
+      timerEl.style.color = timeLeft <= 10 ? '#ff4d4d' : '#ffffff';
+    }
+
+    function startTimer() {
+      if (interval) return;
+      interval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateDisplay();
+        } else {
+          stopTimer();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(interval);
+      interval = null;
+    }
+
+    function restartTimer() {
+      stopTimer();
+      timeLeft = MAX_TIME;
+      updateDisplay();
+    }
+
+    function addTime(sec) {
+      timeLeft = Math.min(timeLeft + sec, MAX_TIME);
+      updateDisplay();
+      plusEl.textContent = '+' + sec;
+      plusEl.style.opacity = '1';
+      container.classList.add('shake');
+      try { audio.currentTime = 0; audio.play(); } catch(e){}
+      setTimeout(() => {
+        plusEl.style.opacity = '0';
+        container.classList.remove('shake');
+      }, 300);
+    }
+
+    document.addEventListener('keydown', e => {
+      const k = e.key.toLowerCase();
+      if (k === 'o') startTimer();
+      if (k === 'l') stopTimer();
+      if (k === 'k') restartTimer();
+      if (k === 'g') addTime(5);
+    });
+
+    updateDisplay();
+  </script>
+</body>
+</html>
